@@ -14,8 +14,9 @@ public struct MobiInitializationError: LocalizedError {
 }
 
 public struct MobiOpeningFileError: LocalizedError {
+    let url: URL
     public var errorDescription: String? {
-        "Cannot open provided file"
+        "Cannot open provided file \(url.absoluteString)"
     }
 }
 
@@ -34,5 +35,13 @@ public struct MobiFetchingRAWMLError: LocalizedError {
 public struct MobiDumpRAWMLError: LocalizedError {
     public var errorDescription: String? {
         "libmobi cannot dump rawml data"
+    }
+}
+
+public struct MobiBookStructureError: LocalizedError {
+    let string: String
+
+    public var errorDescription: String? {
+        string
     }
 }
