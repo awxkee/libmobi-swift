@@ -12,7 +12,7 @@ public class Mobi {
 
     private let driver: MobiDriver
 
-    init(url: URL) throws {
+    public init(url: URL) throws {
         driver = try MobiFileDriver(url: url)
     }
 
