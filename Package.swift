@@ -8,7 +8,7 @@ let package = Package(
     products: [
         .library(
             name: "libmobi",
-            targets: ["libmobi", "libmobic"]),
+            targets: ["libmobi"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
