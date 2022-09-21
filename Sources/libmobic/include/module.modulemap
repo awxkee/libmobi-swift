@@ -1,4 +1,5 @@
 module libmobic {
     header "mobi.h"
+    link "z"
     export *
 }
