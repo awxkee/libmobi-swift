@@ -10,32 +10,17 @@ import libmobic
 
 public class Mobi {
 
-    private var mobiData: UnsafeMutablePointer<MOBIData>
-    private var file: UnsafeMutablePointer<FILE>
+    private let driver: MobiDriver
 
-    public init(url: URL) throws {
-        guard let data = mobi_init() else {
-            throw MobiInitializationError()
-        }
-        self.mobiData = data
-        let pathCChar = FileManager.default.fileSystemRepresentation(withPath: url.path)
-        guard let newFile = fopen(pathCChar, "rb") else {
-            throw MobiOpeningFileError(url: url)
-        }
-        self.file = newFile
-        let ret = mobi_load_file(mobiData, file)
-        if ret != MOBI_SUCCESS {
-            fclose(file)
-            mobi_free(mobiData)
-            throw MobiBookOpeningError()
-        }
+    init(url: URL) throws {
+        driver = try MobiFileDriver(url: url)
     }
 
     public func createEpub(dstEpub: URL) throws {
-        guard let rawml = mobi_init_rawml(mobiData) else {
+        guard let rawml = mobi_init_rawml(driver.getMOBIData()) else {
             throw MobiFetchingRAWMLError()
         }
-        let ret = mobi_parse_rawml(rawml, mobiData)
+        let ret = mobi_parse_rawml(rawml, driver.getMOBIData())
         if ret != MOBI_SUCCESS {
             mobi_free_rawml(rawml)
             throw MobiFetchingRAWMLError()
@@ -54,7 +39,7 @@ public class Mobi {
         guard let dstFile = fopen(pathCChar, "wb") else {
             throw MobiOpeningFileError(url: dst)
         }
-        let ret = mobi_dump_rawml(mobiData, dstFile)
+        let ret = mobi_dump_rawml(driver.getMOBIData(), dstFile)
         if ret != MOBI_SUCCESS {
             fclose(dstFile)
             throw MobiDumpRAWMLError()
@@ -63,6 +48,7 @@ public class Mobi {
     }
 
     public func getRawml() throws -> String {
+        let mobiData = driver.getMOBIData()
         let maxSize = mobi_get_text_maxsize(mobiData)
         if maxSize == MOBI_NOTSET {
             throw MobiBookStructureError(string: "Cannot initialize mobi text size")
@@ -92,6 +78,7 @@ public class Mobi {
     }
 
     public func getCover() throws -> Data? {
+        let mobiData = driver.getMOBIData()
         guard let exth = mobi_get_exthrecord_by_tag(mobiData, EXTH_COVEROFFSET) else {
             return nil
         }
@@ -103,10 +90,5 @@ public class Mobi {
             return nil
         }
         return Data(bytes: record.pointee.data, count: record.pointee.size)
-    }
-
-    deinit {
-        fclose(file)
-        mobi_free(mobiData)
     }
 }
