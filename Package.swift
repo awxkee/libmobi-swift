@@ -20,6 +20,9 @@ let package = Package(
             dependencies: ["libmobic"]),
         .target(name: "libmobic",
                 publicHeadersPath: "include",
-                cSettings: [.define("HAVE_CONFIG_H"), .define("HAVE_STRDUP")]),
+                cSettings: [.define("HAVE_CONFIG_H"), .define("HAVE_STRDUP")],
+                linkerSettings: [
+                    .linkedLibrary("z"),
+                ]),
     ]
 )
