@@ -1,0 +1,4 @@
+module libmobic {
+    header "mobi.h"
+    export *
+}
