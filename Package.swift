@@ -8,6 +8,7 @@ let package = Package(
     products: [
         .library(
             name: "libmobi",
+            type: .dynamic,
             targets: ["libmobi"]),
     ],
     dependencies: [
@@ -20,9 +21,9 @@ let package = Package(
             dependencies: ["libmobic"]),
         .target(name: "libmobic",
                 publicHeadersPath: "include",
-                cSettings: [.define("HAVE_CONFIG_H"), .define("HAVE_STRDUP")],
+                cSettings: [.define("HAVE_CONFIG_H"), .define("HAVE_STRDUP"), .define("USE_XMLWRITER")],
                 linkerSettings: [
-                    .linkedLibrary("z"),
+                    .linkedLibrary("z")
                 ]),
     ]
 )

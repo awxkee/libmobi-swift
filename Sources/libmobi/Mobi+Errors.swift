@@ -45,3 +45,12 @@ public struct MobiBookStructureError: LocalizedError {
         string
     }
 }
+
+public struct MobiEpubCraetingError: LocalizedError {
+    
+    let url: URL
+
+    public var errorDescription: String? {
+        "libmobi cannot create epub to \(url.absoluteString)"
+    }
+}

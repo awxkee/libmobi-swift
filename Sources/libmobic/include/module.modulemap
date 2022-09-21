@@ -1,5 +1,6 @@
 module libmobic {
     header "mobi.h"
+    header "toolchain.h"
     link "z"
     export *
 }

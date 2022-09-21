@@ -31,6 +31,24 @@ public class Mobi {
         }
     }
 
+    public func createEpub(dstEpub: URL) throws {
+        guard let rawml = mobi_init_rawml(mobiData) else {
+            throw MobiFetchingRAWMLError()
+        }
+        let ret = mobi_parse_rawml(rawml, mobiData)
+        if ret != MOBI_SUCCESS {
+            mobi_free_rawml(rawml)
+            throw MobiFetchingRAWMLError()
+        }
+        let pathCChar = FileManager.default.fileSystemRepresentation(withPath: dstEpub.path)
+        let status = create_epub(rawml, pathCChar)
+        if status != MOBI_TOOLCHAIN_SUCCESS {
+            mobi_free_rawml(rawml)
+            throw MobiEpubCraetingError(url: dstEpub)
+        }
+        mobi_free_rawml(rawml)
+    }
+
     public func dumpRawml(dst: URL) throws {
         let pathCChar = FileManager.default.fileSystemRepresentation(withPath: dst.path)
         guard let dstFile = fopen(pathCChar, "wb") else {
