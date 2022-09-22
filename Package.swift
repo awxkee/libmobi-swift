@@ -8,7 +8,6 @@ let package = Package(
     products: [
         .library(
             name: "libmobi",
-            type: .dynamic,
             targets: ["libmobi"]),
     ],
     dependencies: [
