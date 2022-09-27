@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "libmobi",
+    platforms: [.iOS(.v14)],
     products: [
         .library(
             name: "libmobi",

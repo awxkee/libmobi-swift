@@ -96,15 +96,91 @@ public class Mobi {
     }
 
     public func getCover() throws -> Data? {
+        return try getResource(offset: EXTH_COVEROFFSET)
+    }
+
+    public func getThumbnail() throws -> Data? {
+        return try getResource(offset: EXTH_THUMBOFFSET)
+    }
+
+    public func getTitle() throws -> String? {
+        return try getStringExth(offset: EXTH_TITLE)
+    }
+
+    public func getAuthor() throws -> String? {
+        return try getStringExth(offset: EXTH_AUTHOR)
+    }
+
+    public func getPublisher() throws -> String? {
+        return try getStringExth(offset: EXTH_PUBLISHER)
+    }
+
+    public func getDescription() throws -> String? {
+        return try getStringExth(offset: EXTH_DESCRIPTION)
+    }
+
+    public func getISBN() throws -> String? {
+        return try getStringExth(offset: EXTH_ISBN)
+    }
+
+    public func getSubject() throws -> String? {
+        return try getStringExth(offset: EXTH_SUBJECT)
+    }
+
+    public func getPublishingDate() throws -> String? {
+        return try getStringExth(offset: EXTH_PUBLISHINGDATE)
+    }
+
+    public func getReview() throws -> String? {
+        return try getStringExth(offset: EXTH_REVIEW)
+    }
+
+    public func getContributor() throws -> String? {
+        return try getStringExth(offset: EXTH_CONTRIBUTOR)
+    }
+
+    public func getRights() throws -> String? {
+        return try getStringExth(offset: EXTH_RIGHTS)
+    }
+
+    public func getSubjectCode() throws -> String? {
+        return try getStringExth(offset: EXTH_SUBJECTCODE)
+    }
+
+    public func getType() throws -> String? {
+        return try getStringExth(offset: EXTH_TYPE)
+    }
+
+    public func getSource() throws -> String? {
+        return try getStringExth(offset: EXTH_SOURCE)
+    }
+
+    public func getAsin() throws -> String? {
+        return try getStringExth(offset: EXTH_ASIN)
+    }
+
+    public func getVersion() throws -> String? {
+        return try getStringExth(offset: EXTH_VERSION)
+    }
+
+    private func getStringExth(offset: MOBIExthTag) throws -> String? {
+        if let stringData = try getResource(offset: offset, minLength: 0),
+            let string = String(data: stringData, encoding: .utf8) {
+            return string
+        }
+        return nil
+    }
+
+    private func getResource(offset: MOBIExthTag, minLength: Int = 4) throws -> Data? {
         let mobiData = driver.getMOBIData()
-        guard let exth = mobi_get_exthrecord_by_tag(mobiData, EXTH_COVEROFFSET) else {
+        guard let exth = mobi_get_exthrecord_by_tag(mobiData, offset) else {
             return nil
         }
         let offset = mobi_decode_exthvalue(exth.pointee.data, Int(exth.pointee.size))
         let firstResource = mobi_get_first_resource_record(mobiData)
-        let uid = firstResource + Int(offset);
+        let uid = firstResource + Int(offset)
         let record = mobi_get_record_by_seqnumber(mobiData, uid)
-        guard let record, record.pointee.size >= 4 else {
+        guard let record, record.pointee.size >= minLength else {
             return nil
         }
         return Data(bytes: record.pointee.data, count: record.pointee.size)
