@@ -10,8 +10,8 @@ import libmobic
 
 class MobiFileDriver: MobiDriver {
 
-    private var mobiData: UnsafeMutablePointer<MOBIData>
-    private var file: UnsafeMutablePointer<FILE>
+    private var mobiData: UnsafeMutablePointer<MOBIData>?
+    private var file: UnsafeMutablePointer<FILE>?
 
     public init(url: URL) throws {
         guard let data = mobi_init() else {
@@ -25,18 +25,30 @@ class MobiFileDriver: MobiDriver {
         self.file = newFile
         let ret = mobi_load_file(mobiData, file)
         if ret != MOBI_SUCCESS {
-            fclose(file)
-            mobi_free(mobiData)
+            if let file {
+                fclose(file)
+                self.file = nil
+            }
+            if let mobiData {
+                mobi_free(mobiData)
+                self.mobiData = nil
+            }
             throw MobiBookOpeningError()
         }
     }
 
     func getMOBIData() -> UnsafeMutablePointer<MOBIData> {
-        return mobiData
+        return mobiData!
     }
 
     deinit {
-        fclose(file)
-        mobi_free(mobiData)
+        if let file {
+            fclose(file)
+            self.file = nil
+        }
+        if let mobiData {
+            mobi_free(mobiData)
+            self.mobiData = nil
+        }
     }
 }
