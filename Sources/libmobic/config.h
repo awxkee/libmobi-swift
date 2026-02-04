@@ -12,7 +12,7 @@
 #define mobi_config_h
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include "../config.h"
 #endif
 
 #endif
